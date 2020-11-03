@@ -36,9 +36,66 @@ window.addEventListener('DOMContentLoaded', () => {
 		}, 1000);
 			
 	}
+    countTimer('04 november 2020');
+    
+    //Menu
+    const toggleMenu = () => {
+        const btnMenu = document.querySelector('.menu'),
+              menu = document.querySelector('menu'),
+              closeBtn = document.querySelector('.close-btn'),
+              menuItem = menu.querySelectorAll('ul>li');
+        const handlerMenu = ()=>{
+            menu.classList.toggle('active-menu');
+        }
+        btnMenu.addEventListener('click', ()=>{
+            handlerMenu();
+        });
 
-	
-	
+        closeBtn.addEventListener('click', () => {
+            handlerMenu();
+        });
 
-	countTimer('03 november 2020');
+        menuItem.forEach((item) => item.addEventListener('click', handlerMenu));
+
+
+    };
+    toggleMenu();
+
+    //popup
+    const togglePopUp = () => {
+        const popup = document.querySelector('.popup'),
+              popupBtn = document.querySelectorAll('.popup-btn'),
+              popupClose = document.querySelector('.popup-close');
+        let popupContent = document.querySelector('.popup-content');      
+
+        let   position = 0;
+            const popupAnimation = () =>{
+                popup.style.display = 'block';
+                let startAnimation = requestAnimationFrame(popupAnimation);
+                position+= 3.5;
+            
+                if(position < 70){
+                    popupContent.style.top = position *2 + 'px';
+                } else {
+                    cancelAnimationFrame(startAnimation);
+                    position = 0;
+                }
+            };
+    
+        popupBtn.forEach((item) => {
+            item.addEventListener('click', () => {
+                popup.style.display = 'block';
+                if(window.innerWidth > 768){
+                    popupAnimation();
+                }
+            });
+        });
+
+    
+        popupClose.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+
+    };
+    togglePopUp();
 });
