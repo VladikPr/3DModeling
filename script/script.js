@@ -39,11 +39,9 @@ window.addEventListener('DOMContentLoaded', () => {
     
     //Menu
     const toggleMenu = () => {
-        const btnMenu = document.querySelector('.menu'),
-            menu = document.querySelector('menu'),
-            closeBtn = document.querySelector('.close-btn'),
-            menuItem = menu.querySelectorAll('ul>li'),
-            mouseDown = document.querySelector('main>a'),
+        const menu = document.querySelector('menu'),
+            menuItem = menu.querySelectorAll('ul>li>a'),
+            mainBlock = document.querySelector('main'),
             serviceBlock = document.getElementById('service-block'),
             portfolio = document.getElementById('portfolio'),
             calculate = document.getElementById('calc'),
@@ -52,28 +50,39 @@ window.addEventListener('DOMContentLoaded', () => {
 
         const BlockArr = [serviceBlock, portfolio, calculate, command, connect];
         
-        const handlerMenu = (i)=>{
+
+        const handlerMenu = ()=> {
             menu.classList.toggle('active-menu');
-        }
-        btnMenu.addEventListener('click', ()=>{
-            handlerMenu();
-        });
+        };
 
-        closeBtn.addEventListener('click', () => {
-            handlerMenu();
-        });
 
-        menuItem.forEach((item, i) => {
-            item.addEventListener('click', (event) => {
-                event.preventDefault();
+        mainBlock.addEventListener('click', (event) => {
+            let target = event.target;
+            
+            if(target.closest('.menu')){
                 handlerMenu();
-                BlockArr[i].scrollIntoView({behavior : "smooth"});
-            });
+            } else if (target.matches('a>img')){
+                event.preventDefault();
+                BlockArr[0].scrollIntoView({behavior : "smooth"});
+            }
+
         });
 
-        mouseDown.addEventListener('click', (event)=> {
+        menu.addEventListener('click', (event) => {
             event.preventDefault();
-            BlockArr[0].scrollIntoView({behavior : "smooth"})
+            
+            let target = event.target;
+
+            if (target.classList.contains('close-btn')){
+                handlerMenu();
+            } else if (target.matches('a')){
+                menuItem.forEach((item,index) => {
+                    if(target === item){
+                        handlerMenu();
+                        BlockArr[index].scrollIntoView({behavior : "smooth"});
+                    }
+                });
+            }
         });
 
     };
@@ -82,8 +91,8 @@ window.addEventListener('DOMContentLoaded', () => {
     //popup
     const togglePopUp = () => {
         const popup = document.querySelector('.popup'),
-              popupBtn = document.querySelectorAll('.popup-btn'),
-              popupClose = document.querySelector('.popup-close');
+              popupBtn = document.querySelectorAll('.popup-btn');
+              
         let popupContent = document.querySelector('.popup-content');      
 
         let   position = 0;
@@ -109,73 +118,151 @@ window.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-    
-        popupClose.addEventListener('click', () => {
-            popup.style.display = 'none';
+
+        popup.addEventListener('click', (event) => {
+            let target = event.target;
+
+            if (target.classList.contains('popup-close')){
+                popup.style.display = 'none';
+            } else{
+                target = target.closest('.popup-content');
+            if(!target){
+                popup.style.display = 'none';
+            }
+            }
+
+            
         });
 
     };
     togglePopUp();
-    
-    
-});
 
+    //Tabs
+    const tabs = () => {
+        const tabHeader = document.querySelector('.service-header'),
+            tab = tabHeader.querySelectorAll('.service-header-tab'),
+            tabContent = document.querySelectorAll('.service-tab');
 
-/* document.documentElement.scrollTop = 0;
-	const serviceBlock = document.getElementById('service-block').getBoundingClientRect().top,
-          portfolio = document.getElementById('portfolio').getBoundingClientRect().top,
-          calculate = document.getElementById('calc').getBoundingClientRect().top,
-          command = document.getElementById('command').getBoundingClientRect().top +20,
-          connect = document.getElementById('connect').getBoundingClientRect().top;
-          const toggleMenu = () => {
-            document.documentElement.scrollTop = 0;
-            const btnMenu = document.querySelector('.menu'),
-                  menu = document.querySelector('menu'),
-                  closeBtn = document.querySelector('.close-btn'),
-                  menuItem = menu.querySelectorAll('ul>li'),
-                  mouseDown = document.querySelector('main>a'),
-                  allBlocksPosition = [serviceBlock, portfolio, calculate, command, connect];
-            
-            let scrollPosition,
-                startAnimation,
-                index;
-    
-            const handlerMenu = (i)=>{
-                menu.classList.toggle('active-menu');
-            }
-            btnMenu.addEventListener('click', ()=>{
-                handlerMenu();
-            });
-    
-            closeBtn.addEventListener('click', () => {
-                handlerMenu();
-            });
-    
-            let goToNextSlide = ()=> {
-                startAnimation = requestAnimationFrame(goToNextSlide);
-                scrollPosition+=50;
-                document.documentElement.scrollTop = scrollPosition;
-                if(document.documentElement.scrollTop >= allBlocksPosition[index]){
-                    cancelAnimationFrame(startAnimation);
+        const toggleTabContent = (index) => {
+            for (let i = 0; i < tabContent.length; i ++){
+                if(index === i){
+                    tab[i].classList.add('active');
+                    tabContent[i].classList.remove('d-none');
+                } else {
+                    tab[i].classList.remove('active');
+                    tabContent[i].classList.add('d-none');
                 }
-            };
-    
-            menuItem.forEach((item, i) => {
-                item.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    handlerMenu();
-                    scrollPosition = document.documentElement.scrollTop;
-                    index = i;
-                    goToNextSlide();
-                });
-            });
-    
-            mouseDown.addEventListener('click', (event)=> {
-                event.preventDefault();
-                scrollPosition = document.documentElement.scrollTop;
-                index = 0;
-                goToNextSlide();
-            });
-    
+            }
         };
-        toggleMenu(); */
+        tabHeader.addEventListener('click', (event) => {
+            let target = event.target;
+            target = target.closest('.service-header-tab');
+                if(target){
+                    tab.forEach((item, i) => {
+                        if(item === target){
+                            toggleTabContent(i);
+                        }
+                    });
+                }
+            
+        });
+    };
+    tabs();
+
+    // Slider
+    const slider = () => {
+        const slide = document.querySelectorAll('.portfolio-item'),
+            btn = document.querySelectorAll('.portfolio-btn'),
+            dot = document.querySelectorAll('.dot'),
+            slider = document.querySelector('.portfolio-content');
+
+        let currentSlide = 0,
+            interval;
+
+        const prevSlide = (element, index, strClass) => {
+            element[index].classList.remove(strClass);
+        };
+
+        const nextSlide = (element, index, strClass) => {
+            element[index].classList.add(strClass);
+        };
+
+
+        const autoPlaySlide = () => {
+
+            prevSlide(slide, currentSlide, 'portfolio-item-active');
+            prevSlide(dot, currentSlide, 'dot-active');
+
+            currentSlide++;
+            if(currentSlide >= slide.length){
+                currentSlide = 0;
+            }
+
+            nextSlide(slide, currentSlide, 'portfolio-item-active');
+            nextSlide(dot, currentSlide, 'dot-active');
+        };
+
+        const startSlide = (time = 2500) => {
+            interval = setInterval(autoPlaySlide, time);
+        };
+
+        slider.addEventListener('click', (event) => {
+            event.preventDefault();
+
+            let target = event.target;
+
+            if(!target.matches('.portfolio-btn, .dot')){
+                return;
+            }
+
+            prevSlide(slide, currentSlide, 'portfolio-item-active');
+            prevSlide(dot, currentSlide, 'dot-active');
+
+
+            if (target.matches('#arrow-right')){
+                currentSlide++;
+            } else if (target.matches('#arrow-left')){
+                currentSlide--;
+            } else if (target.matches('.dot')){
+                dot.forEach((element, index) => {
+                    if (element === target){
+                        currentSlide = index;
+                    }
+                });
+            }
+
+            if(currentSlide >= slide.length){
+                currentSlide = 0;
+            }
+
+            if(currentSlide < 0){
+                currentSlide = slide.length -1;
+            }
+
+            nextSlide(slide, currentSlide, 'portfolio-item-active');
+            nextSlide(dot, currentSlide, 'dot-active');
+
+        });
+
+        const stopSlide = () => {
+            clearInterval(interval);
+        };
+
+        slider.addEventListener('mouseover', (event) => {
+            if (event.target.matches('.portfolio-btn, .dot')){
+                stopSlide();
+            }
+                
+        });
+
+        slider.addEventListener('mouseout', (event) => {
+            if (event.target.matches('.portfolio-btn, .dot')){
+                startSlide();
+            }
+        });
+        
+        startSlide(2500);
+    };
+    slider();
+
+});
