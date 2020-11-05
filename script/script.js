@@ -265,4 +265,5 @@ window.addEventListener('DOMContentLoaded', () => {
     };
     slider();
 
+    
 });
