@@ -165,6 +165,21 @@ window.addEventListener('DOMContentLoaded', () => {
     tabs();
 
     // Slider
+    const createDots = () => {
+        const dots = document.querySelector('.portfolio-dots');
+        const portfolioItems = document.querySelectorAll('.portfolio-item');
+
+        portfolioItems.forEach((item, index) => {
+            let element = document.createElement('li');
+            element.classList.add('dot');
+            if(index === 0){
+            element.classList.add('dot-active');
+            }
+            dots.appendChild(element);
+        });
+
+    };
+    createDots();
     const slider = () => {
         const slide = document.querySelectorAll('.portfolio-item'),
             btn = document.querySelectorAll('.portfolio-btn'),
