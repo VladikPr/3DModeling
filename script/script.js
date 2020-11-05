@@ -41,12 +41,12 @@ window.addEventListener('DOMContentLoaded', () => {
     const toggleMenu = () => {
         const menu = document.querySelector('menu'),
             menuItem = menu.querySelectorAll('ul>li>a'),
-            mainBlock = document.querySelector('main'),
             serviceBlock = document.getElementById('service-block'),
             portfolio = document.getElementById('portfolio'),
             calculate = document.getElementById('calc'),
             command = document.getElementById('command'),
-            connect = document.getElementById('connect');
+            connect = document.getElementById('connect'),
+            bodyDocument = document.body;
 
         const BlockArr = [serviceBlock, portfolio, calculate, command, connect];
         
@@ -55,35 +55,31 @@ window.addEventListener('DOMContentLoaded', () => {
             menu.classList.toggle('active-menu');
         };
 
-
-        mainBlock.addEventListener('click', (event) => {
+        bodyDocument.addEventListener('click', (event)=> {
             let target = event.target;
-            
+
             if(target.closest('.menu')){
                 handlerMenu();
             } else if (target.matches('a>img')){
                 event.preventDefault();
                 BlockArr[0].scrollIntoView({behavior : "smooth"});
-            }
-
-        });
-
-        menu.addEventListener('click', (event) => {
-            event.preventDefault();
-            
-            let target = event.target;
-
-            if (target.classList.contains('close-btn')){
+            } else if (target.classList.contains('close-btn')){
                 handlerMenu();
             } else if (target.matches('a')){
+                event.preventDefault();
                 menuItem.forEach((item,index) => {
                     if(target === item){
                         handlerMenu();
                         BlockArr[index].scrollIntoView({behavior : "smooth"});
                     }
                 });
+            } else if (!target.closest('menu')){
+                menu.classList.remove('active-menu');
             }
         });
+
+
+       
 
     };
     toggleMenu();
@@ -130,8 +126,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 popup.style.display = 'none';
             }
             }
-
-            
+  
         });
 
     };
@@ -265,5 +260,4 @@ window.addEventListener('DOMContentLoaded', () => {
     };
     slider();
 
-    
 });
