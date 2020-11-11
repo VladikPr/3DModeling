@@ -35,7 +35,7 @@ window.addEventListener('DOMContentLoaded', () => {
 		}, 1000);
 			
 	}
-    countTimer('08 november 2020');
+    countTimer('16 november 2020');
     
     //Menu
     const toggleMenu = () => {
@@ -272,5 +272,38 @@ window.addEventListener('DOMContentLoaded', () => {
         startSlide(2500);
     };
     slider();
+
+    //Show Team Member
+    const hoverEffect = () =>{
+        const photoCollection = document.querySelector('.command'); 
+        photoCollection.addEventListener('mouseover', (e)=> {
+            const {target} = e;
+            if(target.closest('.command__photo')){
+                let defaultPhoto = target.src;
+                target.src = target.dataset.img;
+                target.addEventListener('mouseleave', ()=> {
+                    target.src = defaultPhoto;
+                });
+            }
+            
+        });
+    };
+    hoverEffect(); 
+
+    // Form Validation
+    const formValidation = ()=> {
+        const calculatorInputs = document.querySelectorAll('.calc-block input');
+        const calculator = document.querySelector('.calc-block');
+
+        calculator.addEventListener('input', (e)=>{
+            const {target} = e;
+            if(target.matches('input')){
+                target.value = target.value.replace(/\D/g,"");
+            }
+        });
+    };
+
+    formValidation();
+
 
 });
