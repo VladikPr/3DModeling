@@ -1,5 +1,84 @@
 window.addEventListener('DOMContentLoaded', () => {
     'use strict';
+
+    //getAllForms
+    const getAllForms = (form) => {
+        const elementsForm = [...form.elements].filter(item => {
+            return item.tagName.toLowerCase() !== 'button' &&
+            item.type !=="button";
+        });
+
+        return elementsForm;
+    };
+
+    // Form Validation
+    const formValidation = (form) => {
+
+        function ifTrue(item,pam){
+            if(pam){
+                item.style.border = 'none';
+            }else{
+                item.style.border = 'solid red';
+                item.value = "";
+            }
+            
+        }
+
+        let check = [];
+        getAllForms(form).forEach(item => {
+            if(!item.value){
+                check.push(false);
+                ifTrue(item,false);
+            }
+           
+            if(item.value && item.type === 'tel'){
+                const patternBoolean = /^\+?\d+$/g.test(item.value);
+                check.push(patternBoolean);
+                ifTrue(item, patternBoolean);
+            }
+
+            if(item.value && item.type === 'email'){
+                const patternBoolean = /\w+@\w+\.\w{2,3}/.test(item.value);
+                check.push(patternBoolean);
+                ifTrue(item, patternBoolean);
+            }
+                 
+        });
+        return !check.some(item => item === false);
+        
+    };
+
+
+    const watchInputs = ()=> {
+        const calculator = document.querySelector('.calc-block');
+        const wholeForms = document.querySelectorAll('form');
+
+        calculator.addEventListener('input', (e)=>{
+            const {target} = e;
+            if(target.matches('input')){
+                target.value = target.value.replace(/\D/g,"");
+            }
+        });
+
+        wholeForms.forEach((form)=>{
+            getAllForms(form).forEach((item)=> {
+                item.addEventListener('input', (event)=>{
+                    const {target} = event;
+                    if(target.type === 'tel'){
+                        target.value = target.value.replace(/[^\+\d]/g,'');
+                    }
+                    if(target.name === 'user_name' || target.name === 'user_message'){
+                        target.value = target.value.replace(/[^\sА-Яа-я]/g,'');
+                    }
+                });
+            });
+        });
+
+
+    };
+
+    watchInputs();
+
 	// Timer
 	function countTimer(deadline){
 		let timerHours = document.querySelector('#timer-hours'),
@@ -87,7 +166,8 @@ window.addEventListener('DOMContentLoaded', () => {
     //popup
     const togglePopUp = () => {
         const popup = document.querySelector('.popup'),
-              popupBtn = document.querySelectorAll('.popup-btn');
+              popupBtn = document.querySelectorAll('.popup-btn'),
+              form = document.getElementById('form3');
               
         let popupContent = document.querySelector('.popup-content');      
 
@@ -114,17 +194,28 @@ window.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        const resetInputFields = (form) => {
+            getAllForms(form).forEach(item => {
+                item.value = "";
+                item.style.border ="none";
+            });
+        };
+
 
         popup.addEventListener('click', (event) => {
             let target = event.target;
 
             if (target.classList.contains('popup-close')){
                 popup.style.display = 'none';
+                resetInputFields(form);
+                
             } else{
                 target = target.closest('.popup-content');
+            }
+
             if(!target){
                 popup.style.display = 'none';
-            }
+                resetInputFields(form);
             }
   
         });
@@ -290,21 +381,6 @@ window.addEventListener('DOMContentLoaded', () => {
     };
     hoverEffect(); 
 
-    // Form Validation
-    const formValidation = ()=> {
-        const calculatorInputs = document.querySelectorAll('.calc-block input');
-        const calculator = document.querySelector('.calc-block');
-
-        calculator.addEventListener('input', (e)=>{
-            const {target} = e;
-            if(target.matches('input')){
-                target.value = target.value.replace(/\D/g,"");
-            }
-        });
-    };
-
-    formValidation();
-
     // Calculator
     const calc = (price = 100) => {
         const calcBlock = document.querySelector('.calc-block'),
@@ -348,5 +424,69 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     calc();
+
+    // send-ajax form
+    const sendForm = () => {
+        const wholeForms = document.querySelectorAll('form');
+        const sendAllForms = (form) =>{
+            const errorMessage = 'Что то пошло не так...',
+            loadMessage = 'Загрузка...',
+            successMessage = 'Спасибо! Мы скоро с вами свяжемся!';
+
+            const statusMessage = document.createElement('div');
+            statusMessage.style.cssText = `font-size: 2rem;
+                                           color: white;`;
+            
+            const resetInputFields = (form)=> {
+                getAllForms(form).forEach(item => item.value = "");
+            };
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                if(formValidation(form)){
+                    form.appendChild(statusMessage);
+                    statusMessage.textContent = loadMessage;
+                    const formData = new FormData(form);
+                    let body = {};
+
+                    for (let val of formData.entries()){
+                        body[val[0]] = val[1];
+                    }
+                    postData(body, () => {
+                        statusMessage.textContent = successMessage;
+                    }, (error) => {
+                        statusMessage.textContent = errorMessage;
+                        console.log(error);
+                    });
+                }
+                
+            });
+
+            const postData = (body, outputData, errorData) => {
+                const request = new XMLHttpRequest();
+                request.addEventListener('readystatechange', ()=>{
+                    if(request.readyState !== 4) {
+                        return;
+                    }
+                    if(request.status === 200){
+                        outputData();
+                        resetInputFields(form);
+                    } else {
+                        errorData(request.status);
+                        resetInputFields(form);
+                    }
+                });
+                request.open('POST', 'server.php');
+                request.setRequestHeader('Content-Type', 'application/json');
+                request.send(JSON.stringify(body));
+            };
+            
+        };
+
+        wholeForms.forEach(sendAllForms);
+       
+    };
+
+    sendForm();
 
 });
