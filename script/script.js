@@ -314,6 +314,23 @@ window.addEventListener('DOMContentLoaded', () => {
             calcCount = document.querySelector('.calc-count'),
             totalValue = document.getElementById('total');
 
+            const countNumberAnimation = () => {
+                const speed = 100;
+                const getTarget = +totalValue.getAttribute('data-target');
+                const count = +totalValue.textContent;
+            
+                const step = getTarget/speed;
+            
+                let start;
+                if(count < getTarget){
+                    totalValue.textContent = (count + step).toFixed();
+                    start = setTimeout(countNumberAnimation,2);
+                }else{
+                    totalValue.textContent = getTarget;
+                    clearTimeout(start);
+                }
+            };
+
             const countSum = () => {
                 let total = 0,
                     countValue = 1,
@@ -335,7 +352,10 @@ window.addEventListener('DOMContentLoaded', () => {
                         total = price * typeValue * squareValue * countValue * dayValue;
                     }
 
-                totalValue.textContent = total;
+                    totalValue.textContent = 0;
+                    totalValue.dataset.target = total;
+                    countNumberAnimation();
+
             };
 
             calcBlock.addEventListener('change', (event) =>{
