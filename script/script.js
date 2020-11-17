@@ -474,7 +474,12 @@ window.addEventListener('DOMContentLoaded', () => {
                     }
 
                     postData(body)
-                        .then(() => statusMessage.textContent = successMessage)
+                        .then((response) => {
+                            if(response.status !== 200){
+                                throw new Error('Not Found');
+                            }
+                            statusMessage.textContent = successMessage;
+                        })
                         .catch((error) => {
                             statusMessage.textContent = errorMessage;
                             console.error(error);
@@ -484,25 +489,15 @@ window.addEventListener('DOMContentLoaded', () => {
                             setTimeout(()=>{form.removeChild(form.lastChild);},4000);
                         });
                 }
-                
             });
 
             const postData = (body) => {
-                return new Promise((resolve, reject) => {
-                    const request = new XMLHttpRequest();
-                    request.open('POST', 'server.php');
-                    request.addEventListener('readystatechange', ()=>{
-                        if(request.readyState !== 4) {
-                            return;
-                        }
-                        if(request.status === 200){
-                            resolve();
-                        } else {
-                            reject(request.statusText);
-                        }
-                    });
-                    request.setRequestHeader('Content-Type', 'application/json');
-                    request.send(JSON.stringify(body));
+                return fetch('server.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type' : 'application/json'
+                        },
+                        body: JSON.stringify(body)
                 });
             };
             
