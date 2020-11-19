@@ -1,0 +1,62 @@
+const calc = (price = 100) => {
+    const calcBlock = document.querySelector('.calc-block'),
+        calcType = document.querySelector('.calc-type'),
+        calcSquare = document.querySelector('.calc-square'),
+        calcDay = document.querySelector('.calc-day'),
+        calcCount = document.querySelector('.calc-count'),
+        totalValue = document.getElementById('total');
+
+        const countNumberAnimation = () => {
+            const speed = 100;
+            const getTarget = +totalValue.getAttribute('data-target');
+            const count = +totalValue.textContent;
+        
+            const step = getTarget/speed;
+        
+            let start;
+            if(count < getTarget){
+                totalValue.textContent = (count + step).toFixed();
+                start = setTimeout(countNumberAnimation,2);
+            }else{
+                totalValue.textContent = getTarget;
+                clearTimeout(start);
+            }
+        };
+
+        const countSum = () => {
+            let total = 0,
+                countValue = 1,
+                dayValue = 1;
+            const typeValue = calcType.options[calcType.selectedIndex].value,
+                squareValue = +calcSquare.value;
+
+                if(calcCount.value > 1){
+                    countValue += (calcCount.value -1) / 10;
+                }
+
+                if(calcDay.value && calcDay.value < 5){
+                    dayValue *=2;
+                }else if(calcDay.value && calcDay.value <10){
+                    dayValue *=1.5;
+                }
+
+                if(typeValue && squareValue){
+                    total = price * typeValue * squareValue * countValue * dayValue;
+                }
+
+                totalValue.textContent = 0;
+                totalValue.dataset.target = total;
+                countNumberAnimation();
+
+        };
+
+        calcBlock.addEventListener('change', (event) =>{
+            const {target} = event;
+
+            if(target.matches('.calc-type, .calc-square, .calc-count, .calc-day')){
+                countSum();
+            }
+        });
+};
+
+export default calc;
