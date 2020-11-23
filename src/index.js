@@ -1,4 +1,4 @@
-'use strict';
+    'use strict';
     import "@babel/polyfill";
     import "nodelist-foreach-polyfill";
     import elementClosest from 'element-closest';
@@ -8,19 +8,20 @@
     import "fetch-polyfill";
 
     import watchInputs from './modules/watchInputs';
-    import countTimer from './modules/countTimer';
     import toggleMenu from './modules/toggleMenu';
     import togglePopUp from './modules/togglePopUp';
+    import countTimer from './modules/countTimer';
     import tabs from './modules/tabs';
     import slider from './modules/slider';
     import hoverEffect from './modules/hoverEffect';
     import calc from './modules/calc';
     import sendForm from './modules/sendForm';
-    
+
+    // Timer
+    countTimer('28 november 2020');
+    window.addEventListener('DOMContentLoaded', ()=> {
     // Form Validation
     watchInputs();
-	// Timer
-    countTimer('28 november 2020');
     // Menu
     toggleMenu();
     // popup
@@ -35,3 +36,4 @@
     calc();
     // send-ajax form
     sendForm();
+});

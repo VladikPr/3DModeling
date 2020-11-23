@@ -13,23 +13,25 @@ function countTimer(deadline){
         return {timeRemaining, hours, minutes, seconds};
     }
 
-    let updateClock = setInterval(() => {
+    let updateClock = () => {
         let timer = getTimeRemaining();
         
-            
         timer.hours.toString().length < 2 ? timerHours.textContent = ("0" + timer.hours) : timerHours.textContent = timer.hours;
         timer.minutes.toString().length < 2 ? timerMinutes.textContent = ("0" + timer.minutes) : timerMinutes.textContent = timer.minutes;
         timer.seconds.toString().length < 2 ? timerSeconds.textContent = ("0" + timer.seconds) : timerSeconds.textContent = timer.seconds;
-        ;
         
 
         if(timer.timeRemaining < 0){
-            clearInterval(updateClock);
+            clearInterval(setInterval);
             timerHours.textContent = '00';
             timerMinutes.textContent = '00';
             timerSeconds.textContent = '00';
         }
-    }, 1000);
+    };
+    updateClock();
+    let intervalId = setInterval(updateClock, 1000);
+
+
         
 }
 

@@ -25,8 +25,11 @@ const watchInputs = ()=> {
                 if(target.type === 'tel'){
                     target.value = target.value.replace(/[^\+\d]/g,'');
                 }
-                if(target.name === 'user_name' || target.name === 'user_message'){
+                if(target.name === 'user_name'){
                     target.value = target.value.replace(/[^\sА-Яа-я]/g,'');
+                }
+                if(target.name === 'user_message'){
+                target.value = target.value.replace(/[^-\s\.,":;!\?А-Яа-я]/g,'');
                 }
             });
         });
